@@ -1,13 +1,13 @@
 {
     "name": "advanced-spritesheet",
-    "publisher": "annabunches",
+    "publisher": "DousesDone",
     "displayName": "Advanced Spritesheets",
     "description": "Improved spritesheet export functionality for Aseprite.",
     "version": "0.1.1",
     "author": {
-        "name": "Anna Wiggins",
-        "email": "annabunches@gmail.com",
-        "url": "https://annabunches.net"
+        "name": "Douses Done",
+        "email": "dousesdone@gmail.com",
+        "url": "https://dousesdone.itch.io/"
     },
     "license": "GPL-3.0",
     "categories": [
