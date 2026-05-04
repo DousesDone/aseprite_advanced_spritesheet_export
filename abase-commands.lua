@@ -10,7 +10,6 @@ local function ExportSpritesheetAdvanced()
 
     local spr = Sprite(app.sprite)
 
-    l.RevealLayers(spr.layers)
     l.DeleteLayers(spr, spr.layers)
     l.FlattenLayers(spr.layers)
 

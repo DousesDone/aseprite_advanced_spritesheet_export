@@ -2,34 +2,57 @@
 
 local p = require "abase-properties"
 
--- Deletes any layers with the 'ignored' property.
+-- Deletes any layers with the 'ignored' property, and any hidden layers.
 local function DeleteLayers(spr, layers)
-    for _, layer in ipairs(layers) do
-        if p.IsIgnored(layer) then
-            spr:deleteLayer(layer)
-        elseif layer.isGroup then
-            DeleteLayers(spr, layer.layers)
+    local to_delete = {}
+    
+    local function collect(lyrs)
+        for _, layer in ipairs(lyrs) do
+            if p.IsIgnored(layer) or not layer.isVisible then
+                table.insert(to_delete, layer)
+            elseif layer.isGroup then
+                collect(layer.layers)
+            end
         end
+    end
+    
+    collect(layers)
+    
+    for _, layer in ipairs(to_delete) do
+        spr:deleteLayer(layer)
     end
 end
 
 -- Flattens any layers that have the 'exportedAsSprite' property.
 -- Should be called after deleteLayers.
 local function FlattenLayers(layers)
-    for _, layer in ipairs(layers) do
-        if not layer.isGroup then
-            goto continue
-        end
+    local to_flatten = {}
+    
+    local function collect(lyrs)
+        for _, layer in ipairs(lyrs) do
+            if not layer.isGroup then
+                goto continue
+            end
 
-        if p.IsMerged(layer) then
-            app.range.layers = {layer}
-            app.command.FlattenLayers { visibleOnly = false }
-        else
-            -- recurse
-            FlattenLayers(layer.layers)
-        end
+            if p.IsMerged(layer) then
+                table.insert(to_flatten, layer)
+            else
+                collect(layer.layers)
+            end
 
-        ::continue::
+            ::continue::
+        end
+    end
+    
+    collect(layers)
+    
+    for _, layer in ipairs(to_flatten) do
+        local name = layer.name
+        app.range.layers = {layer}
+        app.command.FlattenLayers { visibleOnly = false }
+        if app.layer then
+            app.layer.name = name
+        end
     end
 end
 
