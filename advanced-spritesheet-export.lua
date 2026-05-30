@@ -41,6 +41,16 @@ function init(plugin)
         end,
     }
 
+    plugin:newCommand{
+        id="ABASEExportSpritesheetAdvancedReversed",
+        title="Export Spritesheet (Advanced, Reversed)",
+        group="file_export_1",
+        onclick=cmd.ExportSpritesheetAdvancedReversed,
+        onenabled=function()
+            return app.activeSprite ~= nil
+        end,
+    }
+
     -- Menu plumbing for ToggleIgnore
     plugin:newCommand{
         id="ABASEToggleIgnoreLayer",

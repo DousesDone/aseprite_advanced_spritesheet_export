@@ -14,7 +14,27 @@ local function ExportSpritesheetAdvanced()
     l.FlattenLayers(spr.layers)
 
     app.command.ExportSpriteSheet {
-        splitLayers = true
+        ui = true,
+        splitLayers = true,
+    }
+
+    spr:close()
+end
+
+local function ExportSpritesheetAdvancedReversed()
+    if not app.sprite then
+        return app.alert "Must have a sprite open to export."
+    end
+
+    local spr = Sprite(app.sprite)
+
+    l.DeleteLayers(spr, spr.layers)
+    l.FlattenLayers(spr.layers)
+    l.ReverseLayers(spr.layers)
+
+    app.command.ExportSpriteSheet {
+        ui = true,
+        splitLayers = true,
     }
 
     spr:close()
@@ -58,6 +78,7 @@ end
 
 local export = {
     ExportSpritesheetAdvanced = ExportSpritesheetAdvanced,
+    ExportSpritesheetAdvancedReversed = ExportSpritesheetAdvancedReversed,
     ToggleIgnore = ToggleIgnore,
     ToggleExportAsSprite = ToggleExportAsSprite
 }

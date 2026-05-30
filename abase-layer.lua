@@ -56,7 +56,24 @@ local function FlattenLayers(layers)
     end
 end
 
--- Makes all layers visible.
+local function ReverseLayers(layers)
+    local reordered = {}
+    for _, layer in ipairs(layers) do
+        table.insert(reordered, layer)
+    end
+
+    local count = #reordered
+    for index, layer in ipairs(reordered) do
+        layer.stackIndex = count - index + 1
+    end
+
+    for _, layer in ipairs(reordered) do
+        if layer.isGroup then
+            ReverseLayers(layer.layers)
+        end
+    end
+end
+
 local function RevealLayers(layers)
     for _, layer in ipairs(layers) do
         if layer.isGroup then
@@ -73,5 +90,6 @@ local export = {
     DeleteLayers = DeleteLayers,
     FlattenLayers = FlattenLayers,
     RevealLayers = RevealLayers,
+    ReverseLayers = ReverseLayers,
 }
 return export
