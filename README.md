@@ -20,12 +20,27 @@ Then Advanced Spritesheet Export is for you! This extension allows you to custom
 *   Selectively export layer groups as single sprites without modifying or flattening the groups.
 *   Configure layer settings via Layer menu, right click menu, or keyboard shortcut.
 *   Modify settings for multiple selected layers at once.
+*   Compare two layers on the selected frames and extract the result (subtract, intersect, exclude, union, changed pixels, color difference) into a new layer.
 
 ## Usage
 
 *   All layers are exported by default. To ignore the active layer or group, select Layer -> Advanced Export -> Toggle Ignore.
 *   To export a layer group as a single sprite, select Layer -> Advanced Export -> Toggle Merge Group.
 *   Invoke the tool via File -> Export -> Export Sprite Sheet (Advanced).
+*   To compare layers, select the layers and/or frames in the timeline, right click a layer, frame or cel and choose Compare Layers... (also under Layer -> Advanced Export). Pick layers A and B and an operation, check the live preview, and the result is created as a new layer above A, only on the selected frames.
+
+### Compare operations
+
+| Operation | Result contains |
+| --- | --- |
+| Subtract (A - B) / (B - A) | Pixels of one layer that are not covered by the other |
+| Intersect (A and B) | Pixels present in both layers |
+| Exclude (A xor B) | Pixels present in exactly one layer |
+| Union (A or B) | Pixels present in either layer |
+| Changed pixels | Pixels whose color differs between A and B (within the tolerance) |
+| Color difference \|A - B\| | Per-channel absolute difference (RGB sprites only) |
+
+"Color from" picks whether kept pixels use A's color, B's color or a single highlight color. "Min alpha" sets how opaque a pixel must be to count as present, and "Tolerance" lets small color differences count as equal.
 
 ### Keyboard Shortcuts
 

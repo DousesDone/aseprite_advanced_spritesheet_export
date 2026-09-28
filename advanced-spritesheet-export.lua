@@ -83,6 +83,43 @@ function init(plugin)
         onenabled=IsLayerSelectionMergable,
     }
 
+    -- Menu plumbing for CompareLayers
+    local function CanCompare()
+        return app.sprite ~= nil and #app.sprite.layers > 0
+    end
+
+    plugin:newCommand{
+        id="ABASECompareLayers",
+        title="Compare Layers...",
+        group="abase_layer_settings",
+        onclick=cmd.CompareLayers,
+        onenabled=CanCompare,
+    }
+
+    plugin:newCommand{
+        id="ABASECompareLayersLayerPopup",
+        title="Compare Layers...",
+        group="layer_popup_merge",
+        onclick=cmd.CompareLayers,
+        onenabled=CanCompare,
+    }
+
+    plugin:newCommand{
+        id="ABASECompareLayersFramePopup",
+        title="Compare Layers...",
+        group="frame_popup_reverse",
+        onclick=cmd.CompareLayers,
+        onenabled=CanCompare,
+    }
+
+    plugin:newCommand{
+        id="ABASECompareLayersCelPopup",
+        title="Compare Layers...",
+        group="cel_popup_links",
+        onclick=cmd.CompareLayers,
+        onenabled=CanCompare,
+    }
+
     -- Event hooks
     app.events:on(
         "aftercommand",
