@@ -20,12 +20,14 @@ Then Advanced Spritesheet Export is for you! This extension allows you to custom
 *   Selectively export layer groups as single sprites without modifying or flattening the groups.
 *   Configure layer settings via Layer menu, right click menu, or keyboard shortcut.
 *   Modify settings for multiple selected layers at once.
+*   Blur layers or groups on export, with an adjustable blur amount.
 *   Compare two layers on the selected frames and extract the result (subtract, intersect, exclude, union, changed pixels, color difference) into a new layer.
 
 ## Usage
 
 *   All layers are exported by default. To ignore the active layer or group, select Layer -> Advanced Export -> Toggle Ignore.
 *   To export a layer group as a single sprite, select Layer -> Advanced Export -> Toggle Merge Group.
+*   To blur a layer or group, select Layer -> Advanced Export -> Toggle Blur, or Blur Settings... to also set the blur amount (1–16) with a slider. Each step adds half a pixel of blur. A blurred layer has its own pixels blurred. A blurred merged group is blurred after flattening, and in any other group every exported layer is blurred; a layer inside it with its own blur setting uses its own amount. Blurred layers are shown in blue, and blur only works in RGB and grayscale sprites.
 *   Invoke the tool via File -> Export -> Export Sprite Sheet (Advanced).
 *   To compare layers, select the layers and/or frames in the timeline, right click a layer, frame or cel and choose Compare Layers... (also under Layer -> Advanced Export). Pick layers A and B and an operation, check the live preview, and the result is created as a new layer above A, only on the selected frames.
 
@@ -54,6 +56,7 @@ All of the Aseprite commands are available as keyboard shortcuts as well:
 
 ### Additional Notes
 
+*   Blur is applied when exporting, not live in the editor; Aseprite has no live filter layers. The blur spreads past a layer's pixels but stops at the sprite edge, so a full-size background keeps solid edges.
 *   Ignored layers always take precedence over merging; if a sublayer in a group is ignored, it will not be merged into the final sprite.
 *   Toggling the advanced export settings on a layer will modify the layer colors. The extension will attempt to detect and preserve user-colored layers. If you happen to use one of the exact colors we have chosen, this will fail. We have chosen odd alpha values to reduce the likelihood of a false negative, but if you are using layer colors extensively, this extension may not work well for you.
 *   To force a layer's color to be controlled by the extension, simply reset the layer's color to all 0 values. (red, green, blue, and alpha should all be 0) You may need to toggle the export settings of a parent layer or create a new layer before the changes take effect.

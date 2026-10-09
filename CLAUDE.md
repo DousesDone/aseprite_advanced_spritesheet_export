@@ -10,6 +10,7 @@ Aseprite extension (Lua) forked from annabunches' "Advanced Spritesheet Export",
 - `abase-layer.lua`: recursive layer operations (delete ignored/hidden, flatten merged groups, reverse order).
 - `abase-properties.lua`: reads and writes extension flags via `layer.properties("annabunches/abase")`. Keep this key as it is, because existing `.aseprite` files depend on it.
 - `abase-color.lua`: sets layer colors to show ignore/merge state, and leaves user-chosen colors alone.
+- `abase-blur.lua`: blurs flagged layers and groups in the export copy (3-pass box blur with fractional radius, amount 1–16 = 0.5 px of gaussian sigma per step, inherited by a group's children). `BlurImage()` is UI-free.
 - `abase-compare.lua`: pixel-by-pixel layer comparison (subtract, intersect, xor, union, changed, color difference). `Compare()` is UI-free and can be tested headless; the dialog lives in `abase-commands.lua`.
 - `abase-listeners.lua`: event handlers.
 - `advanced-spritesheet-export.aseprite-keys`: default shortcuts, keyed by command `id`.

@@ -28,6 +28,12 @@ local MERGE_SUBCOLOR = Color {
     b = 128,
     a = 254,
 }
+local BLUR_COLOR = Color {
+    r = 80,
+    g = 160,
+    b = 230,
+    a = 254,
+}
 
 local function safeSetColor(layer, color)
     local pixelValue = layer.color.rgbaPixel
@@ -35,7 +41,8 @@ local function safeSetColor(layer, color)
         pixelValue ~= IGNORE_COLOR.rgbaPixel and
         pixelValue ~= IGNORE_SUBCOLOR.rgbaPixel and
         pixelValue ~= MERGE_COLOR.rgbaPixel and
-        pixelValue ~= MERGE_SUBCOLOR.rgbaPixel) then
+        pixelValue ~= MERGE_SUBCOLOR.rgbaPixel and
+        pixelValue ~= BLUR_COLOR.rgbaPixel) then
             return
     end
     layer.color = color
@@ -53,6 +60,8 @@ local function SetColor(layer, subColor)
         subColor = MERGE_SUBCOLOR
     elseif subColor == MERGE_SUBCOLOR then
         safeSetColor(layer, subColor)
+    elseif p.IsBlur(layer) then
+        safeSetColor(layer, BLUR_COLOR)
     else
         safeSetColor(layer, BASE_COLOR)
     end

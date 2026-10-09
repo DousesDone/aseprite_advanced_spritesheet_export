@@ -83,6 +83,43 @@ function init(plugin)
         onenabled=IsLayerSelectionMergable,
     }
 
+    -- Menu plumbing for ToggleBlur and BlurSettings
+    local function IsLayerSelectionBlurrable()
+        return #app.range.layers > 0
+    end
+
+    plugin:newCommand{
+        id="ABASEToggleBlurLayer",
+        title="Toggle Blur",
+        group="abase_layer_settings",
+        onclick=cmd.ToggleBlur,
+        onenabled=IsLayerSelectionBlurrable,
+    }
+
+    plugin:newCommand{
+        id="ABASEToggleBlurLayerPopup",
+        title="Toggle Blur",
+        group="abase_layer_settings_popup",
+        onclick=cmd.ToggleBlur,
+        onenabled=IsLayerSelectionBlurrable,
+    }
+
+    plugin:newCommand{
+        id="ABASEBlurSettings",
+        title="Blur Settings...",
+        group="abase_layer_settings",
+        onclick=cmd.BlurSettings,
+        onenabled=IsLayerSelectionBlurrable,
+    }
+
+    plugin:newCommand{
+        id="ABASEBlurSettingsPopup",
+        title="Blur Settings...",
+        group="abase_layer_settings_popup",
+        onclick=cmd.BlurSettings,
+        onenabled=IsLayerSelectionBlurrable,
+    }
+
     -- Menu plumbing for CompareLayers
     local function CanCompare()
         return app.sprite ~= nil and #app.sprite.layers > 0

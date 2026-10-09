@@ -48,10 +48,14 @@ local function FlattenLayers(layers)
     
     for _, layer in ipairs(to_flatten) do
         local name = layer.name
+        -- Flattening drops the group's properties; keep the blur settings
+        local blur, radius = p.IsBlur(layer), p.GetBlurRadius(layer)
         app.range.layers = {layer}
         app.command.FlattenLayers { visibleOnly = false }
         if app.layer then
             app.layer.name = name
+            p.SetBlur(app.layer, blur)
+            p.SetBlurRadius(app.layer, radius)
         end
     end
 end

@@ -3,6 +3,36 @@ local l = require "abase-layer"
 local c = require "abase-color"
 local p = require "abase-properties"
 local cmp = require "abase-compare"
+local b = require "abase-blur"
+
+-- Applies the extension flags to an export copy of the sprite.
+local function PrepareExport(spr)
+    -- Deleting the active layer leaves the timeline pointing at a freed layer,
+    -- which crashes Aseprite when the copy is closed. Keep an empty placeholder
+    -- layer active while layers are deleted, then select a surviving layer.
+    app.sprite = spr
+    local placeholder = spr:newLayer()
+    app.layer = placeholder
+
+    l.DeleteLayers(spr, spr.layers)
+    local blurred = b.ApplyBlurBeforeFlatten(spr)
+    l.FlattenLayers(spr.layers)
+    app.layer = placeholder
+    blurred = b.ApplyBlurAfterFlatten(spr) and blurred
+
+    app.layer = spr.layers[1]
+    app.frame = spr.frames[1]
+    if app.layer ~= placeholder then
+        spr:deleteLayer(placeholder)
+    end
+    -- The sprite sheet dialog exports only the selected layers when the
+    -- timeline has a selection, so don't leave the placeholder selected.
+    app.range:clear()
+
+    if not blurred and b.HasBlur(spr.layers) then
+        app.alert "Blur only works on RGB and grayscale sprites, so it was left out."
+    end
+end
 
 local function ExportSpritesheetAdvanced()
     if not app.sprite then
@@ -11,8 +41,7 @@ local function ExportSpritesheetAdvanced()
 
     local spr = Sprite(app.sprite)
 
-    l.DeleteLayers(spr, spr.layers)
-    l.FlattenLayers(spr.layers)
+    PrepareExport(spr)
 
     app.command.ExportSpriteSheet {
         ui = true,
@@ -29,8 +58,7 @@ local function ExportSpritesheetAdvancedReversed()
 
     local spr = Sprite(app.sprite)
 
-    l.DeleteLayers(spr, spr.layers)
-    l.FlattenLayers(spr.layers)
+    PrepareExport(spr)
     l.ReverseLayers(spr.layers)
 
     app.command.ExportSpriteSheet {
@@ -72,6 +100,50 @@ local function ToggleExportAsSprite()
 
         for _, layer in ipairs(app.range.layers) do
             p.SetMerged(layer, merge)
+            c.SetColorFromRoot(layer)
+        end
+    end)
+end
+
+-- Toggle blur for all selected layers and groups
+local function ToggleBlur()
+    app.transaction("Toggle Blur", function()
+        -- Determine whether we are setting or clearing the flag
+        local blur = false
+        for _, layer in ipairs(app.range.layers) do
+            if not p.IsBlur(layer) then
+                blur = true
+            end
+        end
+
+        for _, layer in ipairs(app.range.layers) do
+            p.SetBlur(layer, blur)
+            c.SetColorFromRoot(layer)
+        end
+    end)
+end
+
+-- Set blur and the blur amount for the selected layers and groups
+local function BlurSettings()
+    local layers = app.range.layers
+    if #layers == 0 then
+        return app.alert "Select the layers or groups to blur."
+    end
+
+    local dlg = Dialog { title = "Blur Settings" }
+    dlg:check { id = "blur", text = "Blur on export", selected = p.IsBlur(layers[1]) }
+    dlg:slider { id = "radius", label = "Blur amount", min = 1, max = p.MAX_BLUR_RADIUS, value = p.GetBlurRadius(layers[1]) }
+    dlg:button { id = "ok", text = "&OK", focus = true }
+    dlg:button { id = "cancel", text = "&Cancel" }
+    dlg:show()
+
+    local data = dlg.data
+    if not data.ok then return end
+
+    app.transaction("Blur Settings", function()
+        for _, layer in ipairs(layers) do
+            p.SetBlur(layer, data.blur)
+            p.SetBlurRadius(layer, data.radius)
             c.SetColorFromRoot(layer)
         end
     end)
@@ -326,6 +398,8 @@ local export = {
     ExportSpritesheetAdvancedReversed = ExportSpritesheetAdvancedReversed,
     ToggleIgnore = ToggleIgnore,
     ToggleExportAsSprite = ToggleExportAsSprite,
+    ToggleBlur = ToggleBlur,
+    BlurSettings = BlurSettings,
     CompareLayers = CompareLayers,
 }
 return export
