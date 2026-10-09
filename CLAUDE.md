@@ -11,6 +11,7 @@ Aseprite extension (Lua) forked from annabunches' "Advanced Spritesheet Export",
 - `abase-properties.lua`: reads and writes extension flags via `layer.properties("annabunches/abase")`. Keep this key as it is, because existing `.aseprite` files depend on it.
 - `abase-color.lua`: sets layer colors to show ignore/merge state, and leaves user-chosen colors alone.
 - `abase-blur.lua`: blurs flagged layers and groups in the export copy (3-pass box blur with fractional radius, amount 1–16 = 0.5 px of gaussian sigma per step, inherited by a group's children). `BlurImage()` is UI-free.
+- `abase-export-settings.lua`: remembers the Export Sprite Sheet dialog settings per file, in the sprite's `exportSettings` property (saved right away if the `.aseprite` file has no other unsaved changes) with a backup in `plugin.preferences.exportSettings[filename]` (unsaved sprites: in memory only). The dialog stores them in the export copy's `app.preferences.document(copy).sprite_sheet`, and only when confirmed with OK.
 - `abase-compare.lua`: pixel-by-pixel layer comparison (subtract, intersect, xor, union, changed, color difference). `Compare()` is UI-free and can be tested headless; the dialog lives in `abase-commands.lua`.
 - `abase-listeners.lua`: event handlers.
 - `advanced-spritesheet-export.aseprite-keys`: default shortcuts, keyed by command `id`.
@@ -41,4 +42,5 @@ There is no build step and no test suite. The installed Aseprite is `aseprite` (
 - A cel image covers only the cel's bounds. Before comparing cels, draw them onto a sprite-sized canvas with `Image(spr.spec)` and `img:drawImage(cel.image, cel.position)`.
 - To trim an image, use `img:shrinkBounds()`, which returns an empty rect if the image is fully transparent, then `Image(img, rect)`, and create the cel at `Point(rect.x, rect.y)`.
 - Speed: an `img:pixels()` loop over 512×512 pixels takes about 30 ms, and a scan of the `img.bytes` string takes about 15 ms.
+- Setting `sprite.properties(...)` or `layer.properties(...)` from a script doesn't mark the sprite as modified and isn't undoable, so the change is only written on the next save. `Sprite(spr)` copies don't carry the sprite's properties, and non-`.aseprite` formats don't store them.
 - `Dialog:canvas` `onpaint` is not called before `dlg:show()`, and `dlg:modify` before showing already sizes the canvas, so it is not repainted on open. Repaint from a zero-interval `Timer` started just before `dlg:show()`.

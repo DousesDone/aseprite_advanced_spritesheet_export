@@ -4,6 +4,7 @@ local c = require "abase-color"
 local p = require "abase-properties"
 local cmp = require "abase-compare"
 local b = require "abase-blur"
+local settings = require "abase-export-settings"
 
 -- Applies the extension flags to an export copy of the sprite.
 local function PrepareExport(spr)
@@ -34,39 +35,38 @@ local function PrepareExport(spr)
     end
 end
 
-local function ExportSpritesheetAdvanced()
+-- Exports a prepared copy of the active sprite, reusing the dialog settings
+-- from the last advanced export of the same file.
+local function ExportCopy(reversed)
     if not app.sprite then
         return app.alert "Must have a sprite open to export."
     end
 
-    local spr = Sprite(app.sprite)
+    local source = app.sprite
+    local spr = Sprite(source)
 
     PrepareExport(spr)
+    if reversed then
+        l.ReverseLayers(spr.layers)
+    end
 
-    app.command.ExportSpriteSheet {
-        ui = true,
-        splitLayers = true,
-    }
+    if settings.Load(source, spr) then
+        app.command.ExportSpriteSheet { ui = true }
+    else
+        -- First export of this file: start with split layers on
+        app.command.ExportSpriteSheet { ui = true, splitLayers = true }
+    end
+    settings.Save(source, spr)
 
     spr:close()
 end
 
+local function ExportSpritesheetAdvanced()
+    ExportCopy(false)
+end
+
 local function ExportSpritesheetAdvancedReversed()
-    if not app.sprite then
-        return app.alert "Must have a sprite open to export."
-    end
-
-    local spr = Sprite(app.sprite)
-
-    PrepareExport(spr)
-    l.ReverseLayers(spr.layers)
-
-    app.command.ExportSpriteSheet {
-        ui = true,
-        splitLayers = true,
-    }
-
-    spr:close()
+    ExportCopy(true)
 end
 
 -- Toggle ignore for all selected layers

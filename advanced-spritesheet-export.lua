@@ -1,5 +1,6 @@
 local cmd = require "abase-commands"
 local listeners = require "abase-listeners"
+local settings = require "abase-export-settings"
 
 local function IsLayerSelectionMergable()
     for _, layer in ipairs(app.range.layers) do
@@ -9,6 +10,8 @@ local function IsLayerSelectionMergable()
 end
 
 function init(plugin)
+    settings.SetPreferences(plugin.preferences)
+
     -- New menu UI elements
     plugin:newMenuSeparator{
         group="layer_popup_merge"
